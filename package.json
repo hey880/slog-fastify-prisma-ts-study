@@ -1,0 +1,27 @@
+{
+  "name": "slog-fastify-prisma-ts-study",
+  "version": "1.0.0",
+  "main": "main.ts",
+  "type": "module",
+  "scripts": {
+    "start:build": "tsc -w --project tsconfig.json && npx -p tsconfig.json",
+    "build:live": "nodemon --watch 'src/' --exec node --loader ts-node/esm src/main.ts --verbose",
+    "start": "npm run build:live"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.15.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "fastify": "^5.5.0",
+    "fastify-plugin": "^5.0.1"
+  }
+}
