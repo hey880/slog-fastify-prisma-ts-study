@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 
-// 로그인, 회원가입 기능에 공통으로 사용. 이름을 두군데서 쓰일 수 있게 맞추자
+// 로그인, 회원가입 기능에 공통으로 사용. 이름을 두군데서 쓰일 수 있게 body로 맞추자
 const authBodySchema = Type.Object({
     email: Type.String(),
     pwd: Type.String(),
