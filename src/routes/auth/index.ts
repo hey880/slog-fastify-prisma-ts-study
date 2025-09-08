@@ -19,7 +19,7 @@ const authRoute = async (fastify: FastifyInstance) => {
         try {
             await authService.register(email, pwd)
             // router에서 응답값을 직접 return하면 return값에 대한 타입 정의를 모두 해야하는 번거로움이 있기 때문에
-            // fastify의 rep를 사용하는 것이 좋다. rep를 사용하면 return type이 Promise<void>로 추론된다.
+            // fastify의 rep를 사용하여 void 형태로 처리하는 것이 좋다. rep를 사용하면 return type이 Promise<void>로 추론된다.
             rep.status(SUCCESS_MESSAGE.registerOk.status).send(SUCCESS_MESSAGE.registerOk)
         }catch(error){
             handleError(rep, ERROR_MESSAGE.badRequest, error)
