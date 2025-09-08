@@ -51,8 +51,9 @@
     "skipLibCheck": true,
   },
   "include":[
-    "src/**/*"
-, "node_modules/prisma"  ],
+    "src/**/*", 
+    "node_modules/prisma" 
+  ],
   "exclude": [
     "document",
     "backup"
