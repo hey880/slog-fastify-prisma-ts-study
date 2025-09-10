@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { registerSchema } from "../../schema";
+import { registerSchema, loginSchema } from "../../schema";
 import { TAuthBody } from "../../schema/types";
 import authService from "../../services/authService";
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../lib/constants";
@@ -22,6 +22,36 @@ const authRoute = async (fastify: FastifyInstance) => {
             // fastify의 rep를 사용하여 void 형태로 처리하는 것이 좋다. rep를 사용하면 return type이 Promise<void>로 추론된다.
             rep.status(SUCCESS_MESSAGE.registerOk.status).send(SUCCESS_MESSAGE.registerOk)
         }catch(error){
+            handleError(rep, ERROR_MESSAGE.badRequest, error)
+        }
+    })
+
+    fastify.post("/login", {schema: loginSchema}, async(req: FastifyRequest<{Body: TAuthBody}>, rep: FastifyReply) => {
+        const { email, pwd } = req.body
+        try {
+            const values = await authService.loginWithPassword(email, pwd)
+            
+            // refresh token을 refresh_token이라는 이름으로 저장
+            rep.setCookie("refresh_token", values.refreshToken, {
+                domain: "localhost",
+                sameSite: "none",
+                secure: true,
+                path: "/",
+                // httpOnly가 true로 적용된 쿠키는 브라우저에서 자바스크립트로 쿠키를 못읽어 
+                // 브라우저에서 실행되는 코드에서 쿠키가 탈취될 위험을 줄여준다.
+                httpOnly: true,
+                // expires는 7일로 설정했기 때문에 현재 날짜에 7일에 해당하는 값을 더해줘야함.
+                // 1000은 1초를 의미. 즉, 아래 식은 24시간 * 7 로 7일을 의미
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+            })
+
+            const result = {
+                id: values.id,
+                email: values.email,
+                Authorization: values.accessToken,
+            }
+            rep.status(201).send(result)
+        } catch(error) {
             handleError(rep, ERROR_MESSAGE.badRequest, error)
         }
     })

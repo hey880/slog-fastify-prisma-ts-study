@@ -20,7 +20,20 @@ const registerSchema = {
     }
 }
 
+// 로그인 요청에 대한 json schema 검증에 사용
+const loginSchema = {
+    body,
+    response: {
+        201: Type.Object({
+            id: Type.Number(),
+            email: Type.String(),
+            Authorization: Type.String(),
+        })
+    }
+}
+
 export {
     authBodySchema,
-    registerSchema
+    registerSchema,
+    loginSchema,
 }
