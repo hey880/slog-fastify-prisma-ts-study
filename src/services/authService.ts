@@ -1,5 +1,5 @@
 import db from "../lib/db";
-import { generateHash, duplicateVerifyUser, verifyPassword, generateAccessToken, generateRefreshToken } from "../lib/authHelper";
+import { generateHash, duplicateVerifyUser, verifyPassword, generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../lib/authHelper";
 import { ERROR_MESSAGE } from "../lib/constants";
 
 // 실제 가입 처리 기능
@@ -85,7 +85,32 @@ function authService() {
         }
     }
 
-    return { register, loginWithPassword, logout }
+    const refresh = async ( refresh_token: string ) => {
+        try {
+            if(!refresh_token) throw ERROR_MESSAGE.unauthorized
+
+            const authenticationUser = await verifyRefreshToken(refresh_token)
+
+            const userInfo = {
+                id: authenticationUser.id,
+                email: authenticationUser.email,
+            }
+
+            const access_token = generateAccessToken(userInfo)
+
+            const returnValue = {
+                id: authenticationUser.id,
+                email: authenticationUser.email,
+                Authorization: access_token, 
+            }
+
+            return returnValue
+        } catch (error) {
+            throw error
+        }
+    }
+
+    return { register, loginWithPassword, logout, refresh }
 }
 
 export default authService();

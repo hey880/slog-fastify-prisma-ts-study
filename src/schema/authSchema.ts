@@ -44,9 +44,20 @@ const logoutSchema = {
     }
 }
 
+const refreshSchema = {
+    response: {
+        201: Type.Object({
+            id: Type.Number(),
+            email: Type.String(),
+            Authorization: Type.String(),
+        })
+    }
+}
+
 export {
     authBodySchema,
     registerSchema,
     loginSchema,
     logoutSchema,
+    refreshSchema,
 }

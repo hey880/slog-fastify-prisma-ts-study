@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { registerSchema, loginSchema, logoutSchema } from "../../schema";
+import { registerSchema, loginSchema, logoutSchema, refreshSchema } from "../../schema";
 import { TAuthBody } from "../../schema/types";
 import authService from "../../services/authService";
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../lib/constants";
@@ -68,6 +68,21 @@ const authRoute = async (fastify: FastifyInstance) => {
             rep.clearCookie("refresh_token", {path: "/"}) // cookie 초기화
             rep.status(SUCCESS_MESSAGE.logoutOk.status).send(SUCCESS_MESSAGE.logoutOk)
         } catch(error) {
+            handleError(rep, ERROR_MESSAGE.badRequest, error)
+        }
+    })
+
+    fastify.post("/refresh", { schema: refreshSchema }, async(req: FastifyRequest, rep: FastifyReply) => {
+        const refresh_token = req.cookies.refresh_token
+        if(!refresh_token) {
+            handleError(rep, ERROR_MESSAGE.unauthorized)
+            return
+        }
+
+        try {
+            const result = await authService.refresh(refresh_token)
+            rep.status(201).send(result)
+        } catch (error) {
             handleError(rep, ERROR_MESSAGE.badRequest, error)
         }
     })

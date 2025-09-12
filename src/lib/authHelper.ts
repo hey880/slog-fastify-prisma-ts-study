@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import db from "./db";
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { ERROR_MESSAGE, ROUND, SECRET_KEY, ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES } from "./constants";
 
 const generateHash = ( pwd: string ) => {
@@ -58,10 +58,31 @@ const generateRefreshToken = (user: {id: number, email: string}) => {
     return refreshToken
 }
 
+const verifyRefreshToken = async( refresh_token: string ) => {
+    // 서버에 해당 토큰으로 로그인된 정보가 있는지 확인 후 있으면 평문화 된 token 내용을 반환
+    try {
+        const decoded = jwt.verify(refresh_token, SECRET_KEY) as JwtPayload
+        const tokenFromServer = await db.token.count({
+            where: {
+                userId: decoded.id,
+                refreshToken: refresh_token,
+            }
+        })
+        if (tokenFromServer > 0) {
+            return decoded
+        } else {
+            throw ERROR_MESSAGE.unauthorized
+        }
+    } catch (error) {
+        throw ERROR_MESSAGE.unauthorized
+    }
+}
+
 export {
     generateHash,
     duplicateVerifyUser,
     generateAccessToken,
     generateRefreshToken,
     verifyPassword,
+    verifyRefreshToken,
 }
