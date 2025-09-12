@@ -72,7 +72,7 @@ const SUCCESS_MESSAGE= {
     status: 201,
     message: 'Login Ok!'
   },
-  logouOk: {
+  logoutOk: {
     success: true,
     status: 205,
     message: 'Logout success!'

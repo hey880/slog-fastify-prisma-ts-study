@@ -32,8 +32,21 @@ const loginSchema = {
     }
 }
 
+// logout은 전달 받을 값이 없기 때문에 response만 정의. 
+// 이 때 response는 SUCCESS_MESSAGE와 동일함.
+const logoutSchema = {
+    response: {
+        205: Type.Object({
+            success: Type.Boolean(),
+            status: Type.Number(),
+            message: Type.String(),
+        })
+    }
+}
+
 export {
     authBodySchema,
     registerSchema,
     loginSchema,
+    logoutSchema,
 }
