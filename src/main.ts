@@ -4,6 +4,7 @@ import { fastifyCookie, type FastifyCookieOptions } from "@fastify/cookie"
 import routes from "./routes"
 import { SECRET_KEY } from "./lib/constants"
 import { currentlyAuthPlugin } from "./plugin/authPlugin"
+import { checkStartupUser, checkStartupArticle } from "./startup"
 
 const fastify = Fastify({
     logger: true
@@ -26,8 +27,10 @@ fastify.register(routes)
 
 const start  = async () => {
     try{
-       await fastify.listen({port: 8083});
-       console.log(`Server Start!!`)
+        await checkStartupUser()
+        await checkStartupArticle()
+        await fastify.listen({port: 8083});
+        console.log(`Server Start!!`)
     } catch(error) {
         fastify.log.error(error)
         process.exit(1);
