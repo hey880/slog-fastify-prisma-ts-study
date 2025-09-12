@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import db from "./db";
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { ERROR_MESSAGE, ROUND, SECRET_KEY, ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES } from "./constants";
+import { handleError } from "../lib/errorHelper"
 
 const generateHash = ( pwd: string ) => {
     const hashPwd = bcrypt.hashSync(pwd, ROUND);
@@ -78,6 +79,25 @@ const verifyRefreshToken = async( refresh_token: string ) => {
     }
 }
 
+const shortVerifyRefreshToken = (refresh_token: string) => {
+    // token 상태만을 확인
+    const decoded = jwt.verify(refresh_token, SECRET_KEY)
+    if (decoded) {
+        return true
+    } else {
+        return false
+    }
+}
+
+const verifyAccessToken = (access_token: string) => {
+    try {
+        const decode = jwt.verify(access_token, SECRET_KEY) as JwtPayload
+        return decode
+    } catch (error) {
+        throw ERROR_MESSAGE.invalidToken
+    }
+}
+
 export {
     generateHash,
     duplicateVerifyUser,
@@ -85,4 +105,6 @@ export {
     generateRefreshToken,
     verifyPassword,
     verifyRefreshToken,
+    shortVerifyRefreshToken,
+    verifyAccessToken,
 }

@@ -3,6 +3,7 @@ import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
 import { fastifyCookie, type FastifyCookieOptions } from "@fastify/cookie"
 import routes from "./routes"
 import { SECRET_KEY } from "./lib/constants"
+import { currentlyAuthPlugin } from "./plugin/authPlugin"
 
 const fastify = Fastify({
     logger: true
@@ -20,6 +21,7 @@ fastify.register(fastifyCookie, {
     secret: SECRET_KEY,
 } as FastifyCookieOptions)
 
+fastify.register(currentlyAuthPlugin)
 fastify.register(routes)
 
 const start  = async () => {
