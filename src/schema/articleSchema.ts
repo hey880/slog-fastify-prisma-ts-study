@@ -1,7 +1,8 @@
 import { Type } from "@sinclair/typebox"
-import { articleSchema, commonHeadersSchema } from "./commonSchema"
+import { articleSchema, commonBodySchema, commonHeadersSchema } from "./commonSchema"
 
 const headers = commonHeadersSchema
+const body = commonBodySchema
 
 const createArticleSchema = {
     headers,
@@ -14,6 +15,15 @@ const createArticleSchema = {
     }
 }
 
+const updateArticleSchema = {
+    headers,
+    body,
+    response: {
+        200: articleSchema
+    }
+}
+
 export {
-    createArticleSchema
+    createArticleSchema,
+    updateArticleSchema,
 }

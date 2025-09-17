@@ -1,6 +1,8 @@
 import db from "../lib/db"
-import { getCurrentDate } from "../lib/timeHelper"
 import { TArticle } from "../schema/types"
+import { getCurrentDate } from "../lib/timeHelper"
+import { ERROR_MESSAGE } from "../lib/constants"
+import { verifyArticleUser } from "../lib/articleHelper"
 
 function articleService() {
     const createArticle = async (id:number, email:string, content: string) => {
@@ -28,7 +30,36 @@ function articleService() {
             throw error
         }
     }
-    return { createArticle }
+
+    const updateArticle = async (articleId: number, content: string, userId: number, email:string) => {
+        try {
+            const checkVerifyUser = await verifyArticleUser(articleId, userId)
+            if (checkVerifyUser) {
+                const result = await db.article.update({
+                    where: {
+                        id: articleId,
+                    },
+                    data: {
+                        content: content,
+                    }
+                })
+
+                const returnValue:TArticle = {
+                    ...result,
+                    userEmail: email,
+                    likeMe: false,
+                    createdAt: result.createdAt.toString()
+                }
+
+                return returnValue
+            } else {
+                throw ERROR_MESSAGE.badRequest
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    return { createArticle, updateArticle }
 }
 
 export default articleService();
