@@ -3,6 +3,7 @@ import db from "./db";
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { ERROR_MESSAGE, ROUND, SECRET_KEY, ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES } from "./constants";
 import { handleError } from "../lib/errorHelper"
+import { FastifyReply, FastifyRequest } from "fastify"
 
 const generateHash = ( pwd: string ) => {
     const hashPwd = bcrypt.hashSync(pwd, ROUND);
@@ -98,6 +99,17 @@ const verifyAccessToken = (access_token: string) => {
     }
 }
 
+const verifySignin = async (req: FastifyRequest, rep: FastifyReply) => {
+    const userId = req.user?.id
+    const email = req.user?.email
+
+    if (userId && email) {
+        return // 토큰에도 이상이 없으면 true를 반환
+    } else {
+        handleError(rep, ERROR_MESSAGE.unauthorized)
+    }
+}
+
 export {
     generateHash,
     duplicateVerifyUser,
@@ -107,4 +119,5 @@ export {
     verifyRefreshToken,
     shortVerifyRefreshToken,
     verifyAccessToken,
+    verifySignin,
 }

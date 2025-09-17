@@ -5,6 +5,7 @@ import { TCommonHeaders } from "../schema/types"
 
 const currentlyAuth: FastifyPluginAsync = async (fastify) => {
     // fastify decorateRequest에 특정 값을 설정하면 fastify request에서 설정한 값을 가져오거나 주입할 수 있게된다.
+    // request에 user라는 키로 id, email 값을 가져올 수 있도록 주입함.
     fastify.decorateRequest("user", null)
     fastify.addHook("preHandler", async (req:FastifyRequest<{Headers: TCommonHeaders}>) => {
         const { authorization } = req.headers
