@@ -11,9 +11,8 @@ const fastify = Fastify({
 }).withTypeProvider<TypeBoxTypeProvider>()
 // typebox를 사용하기 위해서는 withTYpeProvider로 TypeBoxTypeProvider를 설정해줘야함.
 
-// tsx 사용 안하는 경우는 아래와같이 실행
-// nodemon --watch 'src/' --exec node --loader ts-node/esm src/main.ts --verbose
-
+// tsx를 사용하는 영우는 아래와 같이 build:live 값을 설정한다.
+// "build:live": "npx tsx src/main.ts"
 //fastify.get("/ping", async (request, reply) => {
 //   return "pong\n";
 //})
