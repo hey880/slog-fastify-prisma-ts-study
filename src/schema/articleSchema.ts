@@ -1,9 +1,10 @@
 import { Type } from "@sinclair/typebox"
-import { articleSchema, commonBodySchema, commonHeadersSchema, commonParamSchema } from "./commonSchema"
+import { articleSchema, commonBodySchema, commonHeadersSchema, commonPagenationSchema, commonParamSchema, commonQuerySchema } from "./commonSchema"
 
 const headers = commonHeadersSchema
 const body = commonBodySchema
 const params = commonParamSchema
+const querystring = commonQuerySchema
 
 const createArticleSchema = {
     headers,
@@ -32,8 +33,26 @@ const deleteArticleSchema = {
     }
 }
 
+// 한 개의 게시글을 조회
+const readArticleOneSchema = {
+    params,
+    response: {
+        200: articleSchema
+    }
+}
+
+const readArticlesSchema = {
+    headers,
+    querystring,
+    response: {
+        200: commonPagenationSchema
+    }
+}
+
 export {
     createArticleSchema,
     updateArticleSchema,
     deleteArticleSchema,
+    readArticleOneSchema,
+    readArticlesSchema,
 }

@@ -1,8 +1,9 @@
 import db from "../lib/db"
-import { TArticle } from "../schema/types"
+import { TArticle, TCommonPagenation } from "../schema/types"
 import { getCurrentDate } from "../lib/timeHelper"
-import { ERROR_MESSAGE } from "../lib/constants"
-import { verifyArticleUser } from "../lib/articleHelper"
+import { CATEGORY_TYPE, ERROR_MESSAGE } from "../lib/constants"
+import { verifyArticleUser, likeCompareArticles } from "../lib/articleHelper"
+import { handleError } from "../lib/errorHelper"
 
 function articleService() {
     const createArticle = async (id:number, email:string, content: string) => {
@@ -79,7 +80,114 @@ function articleService() {
         }
     }
 
-    return { createArticle, updateArticle, deleteArticle }
+    const readArticleOne = async(articleId: number) => {
+        try {
+            const articleOne = await db.article.findUnique({
+                where: {
+                    id: articleId
+                },
+                // includes는 테이블 간 조인을 의미
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        }
+                    }
+                }
+            })
+            let returnValue:TArticle | {}
+            if (articleOne) {
+                returnValue = {
+                    ...articleOne,
+                    userEmail: articleOne.user.email,
+                    likeMe: false,
+                    createdAt: articleOne.createdAt.toString()
+                }
+            } else {
+                returnValue = {}
+            }
+            return returnValue
+        } catch (error) {
+            throw error
+        }
+    }
+
+    const readArticlesList = async (pageNumber:number, mode:string, userId?:number) => {
+        const pageSize = 10 // limit
+        let skip = 0 // offset
+
+        // prisma에서는 skip과 take를 사용해서 pagenation을 구현
+        // skip : 앞에 몇개의 글을 스킵할지 설정 (전체 글 개수 중 현재 페이지의 글만 보여주기 위함)
+        // take : 가져올 글의 개수
+
+        if (pageNumber > 1) skip = ((pageNumber - 1) * pageSize)
+        
+            let _where = {}
+
+            if(mode === CATEGORY_TYPE.MY) {
+                _where = {userId: userId}
+            }
+
+            try {
+                const articles = await db.article.findMany({
+                    where: _where,
+                    include: {
+                        // user 테이블과 join하여 id와 email을 가져옴
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                            }
+                        }
+                    },
+                    orderBy: {
+                        id: "desc",
+                    },
+                    skip: skip,
+                    take: pageSize,
+                })
+
+                const totalArticleCount = await db.article.count({
+                    where: _where
+                })
+                // 현재 게시글을 기준으로 전체 페이지 수를 계산
+                let totalPageCount = Math.ceil(totalArticleCount / pageSize)
+                // join된 user 값 및 createdAt을 article 형태에 맞게 변환
+                let flattenArticles:TArticle[] = articles.map(article => {
+                    return {
+                        ...article,
+                        userEmail: article.user.email,
+                        likeMe: false,
+                        createdAt: article.createdAt.toString()
+                    }
+                })
+                // like 표시
+                let returnArticles:TArticle[]
+                // 로그인 된 사용자라면 해당 사용자가 '좋아요'한 글의 likeMe값을 true로 변환
+                if (userId) {
+                    returnArticles = await likeCompareArticles([...flattenArticles], userId)
+                } else {
+                    returnArticles = [...flattenArticles]
+                }
+
+                const returnValue:TCommonPagenation = {
+                    totalPageCount: totalPageCount,
+                    articleList: returnArticles,
+                }
+                return returnValue
+            } catch (error) {
+                throw error
+            }
+    }
+
+    return { 
+        createArticle, 
+        updateArticle, 
+        deleteArticle,
+        readArticleOne,
+        readArticlesList,
+    }
 }
 
 export default articleService();

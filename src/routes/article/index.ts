@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { createArticleSchema, deleteArticleSchema, updateArticleSchema } from "../../schema";
-import { TCommonBody, TCommonHeaders, TCommonParam } from "../../schema/types";
+import { createArticleSchema, deleteArticleSchema, readArticleOneSchema, readArticlesSchema, updateArticleSchema } from "../../schema";
+import { TCommonBody, TCommonHeaders, TCommonParam, TCommonQuery } from "../../schema/types";
 import { handleError } from "../../lib/errorHelper";
-import { ERROR_MESSAGE } from "../../lib/constants";
+import { CATEGORY_TYPE, ERROR_MESSAGE } from "../../lib/constants";
 import articleService from "../../services/articleService";
 import { verifySignin } from "../../lib/authHelper";
 
@@ -59,6 +59,37 @@ const articleRoute = async (fastify:FastifyInstance) => {
                 rep.status(200).send(result)
             } catch (error) {
                 throw handleError(rep, ERROR_MESSAGE.badRequest, error)
+            }
+        }
+    })
+    // 1개 게시물 조회
+    fastify.route({
+        method: "GET",
+        url: "/:articleId",
+        schema: readArticleOneSchema,
+        handler: async (req: FastifyRequest<{Params: TCommonParam}>, rep: FastifyReply) => {
+            const { articleId } = req.params
+            try {
+                const result = await articleService.readArticleOne(Number(articleId))
+                rep.status(200).send(result)
+            } catch (error) {
+                handleError(rep, ERROR_MESSAGE.badRequest, error)
+            }
+        }
+    })
+
+    fastify.route({
+        method: "GET",
+        url: "/",
+        schema: readArticlesSchema,
+        handler: async (req:FastifyRequest<{Headers:TCommonHeaders, Querystring:TCommonQuery}>, rep:FastifyReply) => {
+            const { pageNumber=0, mode=CATEGORY_TYPE.ALL } = req.query
+            const userId = req.user?.id // user 값이 없을 수도 있음.
+            try {
+                const result = await articleService.readArticlesList(pageNumber, mode, userId)
+                rep.status(200).send(result)
+            } catch (error) {
+                handleError(rep, ERROR_MESSAGE.badRequest, error)
             }
         }
     })

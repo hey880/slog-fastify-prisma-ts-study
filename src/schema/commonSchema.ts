@@ -26,9 +26,21 @@ const commonParamSchema = Type.Object({
     articleId: Type.Number()
 })
 
+const commonQuerySchema = Type.Object({
+    pageNumber: Type.Optional(Type.Number()),
+    mode: Type.Optional(Type.String()), // 내글, 전체글 같은 옵션
+})
+
+const commonPagenationSchema = Type.Object({
+    totalPageCount: Type.Number(),
+    articleList: Type.Array(articleSchema),
+})
+
 export {
     commonHeadersSchema,
     articleSchema,
     commonBodySchema,
     commonParamSchema,
+    commonQuerySchema,
+    commonPagenationSchema,
 }

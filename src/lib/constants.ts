@@ -94,6 +94,11 @@ const SUCCESS_MESSAGE= {
   }
 } as const
 
+const CATEGORY_TYPE = {
+  ALL: "all",
+  MY: "my"
+} as const
+
 export {
     FIRST_PWD,
     ROUND,
@@ -101,7 +106,8 @@ export {
     ACCESS_TOKEN_EXPIRES,
     REFRESH_TOKEN_EXPIRES,
     ERROR_MESSAGE,
-    SUCCESS_MESSAGE
+    SUCCESS_MESSAGE,
+    CATEGORY_TYPE,
 }
 
 // 이 메시지들을 처리할 헬퍼 함수는 lib/errorHelper.ts에 있음
