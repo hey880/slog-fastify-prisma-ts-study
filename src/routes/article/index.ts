@@ -4,7 +4,7 @@ import { TCommonBody, TCommonHeaders, TCommonParam, TCommonQuery } from "../../s
 import { handleError } from "../../lib/errorHelper";
 import { CATEGORY_TYPE, ERROR_MESSAGE } from "../../lib/constants";
 import articleService from "../../services/articleService";
-import { verifySignin } from "../../lib/authHelper";
+import { verifySignIn } from "../../lib/authHelper";
 
 const articleRoute = async (fastify:FastifyInstance) => {
     // 다른 route들은 short cut 방식으로 route 정의. 이번에는 명시적으로 route 요소들을 정의.
@@ -12,7 +12,7 @@ const articleRoute = async (fastify:FastifyInstance) => {
         method: "POST",
         schema: createArticleSchema,
         url: "/",
-        preHandler: [verifySignin], // 인증여부를 확인해서 인증이 안된 요청은 handler 실행을 하지 못함
+        preHandler: [verifySignIn], // 인증여부를 확인해서 인증이 안된 요청은 handler 실행을 하지 못함
         handler: async (req: FastifyRequest<{Headers:TCommonHeaders, Body:TCommonBody}>, rep:FastifyReply) => {
             const { content } = req.body
             // preHandler에서 인증여부를 검증했기 때문에 req.user에 단언 연산자(!) 사용 가능
@@ -32,7 +32,7 @@ const articleRoute = async (fastify:FastifyInstance) => {
         method: "PUT",
         url: "/",
         schema: updateArticleSchema,
-        preHandler: [verifySignin],
+        preHandler: [verifySignIn],
         handler: async(req: FastifyRequest<{Headers: TCommonHeaders, Body: TCommonBody}>, rep: FastifyReply) => {
             const { articleId, content } = req.body
             const userId = req.user!.id
@@ -50,7 +50,7 @@ const articleRoute = async (fastify:FastifyInstance) => {
         method: "DELETE",
         url: `/:articleId`,
         schema: deleteArticleSchema,
-        preHandler: [verifySignin],
+        preHandler: [verifySignIn],
         handler: async(req: FastifyRequest<{Headers: TCommonHeaders, Params: TCommonParam}>, rep: FastifyReply) => {
             const { articleId } = req.params
             const userId = req.user!.id

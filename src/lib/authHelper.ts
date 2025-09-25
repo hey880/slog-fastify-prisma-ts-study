@@ -99,7 +99,7 @@ const verifyAccessToken = (access_token: string) => {
     }
 }
 
-const verifySignin = async (req: FastifyRequest, rep: FastifyReply) => {
+const verifySignIn = async (req: FastifyRequest, rep: FastifyReply) => {
     const userId = req.user?.id
     const email = req.user?.email
 
@@ -119,5 +119,5 @@ export {
     verifyRefreshToken,
     shortVerifyRefreshToken,
     verifyAccessToken,
-    verifySignin,
+    verifySignIn,
 }
