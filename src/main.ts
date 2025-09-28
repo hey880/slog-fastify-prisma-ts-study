@@ -5,9 +5,14 @@ import routes from "./routes"
 import { SECRET_KEY } from "./lib/constants"
 import { currentlyAuthPlugin } from "./plugin/authPlugin"
 import { checkStartupUser, checkStartupArticle } from "./startup"
+import fs from "fs";
 
 const fastify = Fastify({
-    logger: true
+    logger: true,
+    https: {
+        key: fs.readFileSync("./server.key"),
+        cert: fs.readFileSync("./server.crt"),
+    }
 }).withTypeProvider<TypeBoxTypeProvider>()
 // typebox를 사용하기 위해서는 withTYpeProvider로 TypeBoxTypeProvider를 설정해줘야함.
 
