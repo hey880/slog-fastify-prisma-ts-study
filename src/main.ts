@@ -6,6 +6,7 @@ import { SECRET_KEY } from "./lib/constants"
 import { currentlyAuthPlugin } from "./plugin/authPlugin"
 import { checkStartupUser, checkStartupArticle } from "./startup"
 import fs from "fs";
+import cors from "@fastify/cors";
 
 const fastify = Fastify({
     logger: true,
@@ -21,6 +22,11 @@ const fastify = Fastify({
 //fastify.get("/ping", async (request, reply) => {
 //   return "pong\n";
 //})
+
+fastify.register(cors, {
+    origin: true, // Access-Control-Allow-Origin
+    credentials: true, // Access-Control-Allow-Credentials
+})
 
 fastify.register(fastifyCookie, {
     secret: SECRET_KEY,
