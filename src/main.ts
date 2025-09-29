@@ -7,6 +7,9 @@ import { currentlyAuthPlugin } from "./plugin/authPlugin"
 import { checkStartupUser, checkStartupArticle } from "./startup"
 import fs from "fs";
 import cors from "@fastify/cors";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
+import { swaggerConfig, swaggerUiConfig } from "./config/swagger";
 
 const fastify = Fastify({
     logger: true,
@@ -27,6 +30,9 @@ fastify.register(cors, {
     origin: true, // Access-Control-Allow-Origin
     credentials: true, // Access-Control-Allow-Credentials
 })
+
+fastify.register(fastifySwagger, swaggerConfig)
+fastify.register(fastifySwaggerUi, swaggerUiConfig)
 
 fastify.register(fastifyCookie, {
     secret: SECRET_KEY,
