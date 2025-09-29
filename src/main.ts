@@ -45,7 +45,9 @@ const start  = async () => {
     try{
         await checkStartupUser()
         await checkStartupArticle()
-        await fastify.listen({port: 8083});
+        // process.send 확인 후 반환 구문으로 서버가 준비 및 실행 완료되면
+        // 서버에 "ready" 라는 문구 보내서 pm2가 이 문구를 기준으로 서버 재시작 할 수 있도록 함
+        await fastify.listen({port: 8083}, () => {if(process.send) process.send("ready")});
         console.log(`Server Start!!`)
     } catch(error) {
         fastify.log.error(error)
