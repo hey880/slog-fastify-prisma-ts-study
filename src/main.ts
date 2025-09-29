@@ -9,10 +9,10 @@ import fs from "fs";
 
 const fastify = Fastify({
     logger: true,
-    https: {
-        key: fs.readFileSync("./server.key"),
-        cert: fs.readFileSync("./server.crt"),
-    }
+    // https: {
+    //     key: fs.readFileSync("./server.key"),
+    //     cert: fs.readFileSync("./server.crt"),
+    // }
 }).withTypeProvider<TypeBoxTypeProvider>()
 // typebox를 사용하기 위해서는 withTYpeProvider로 TypeBoxTypeProvider를 설정해줘야함.
 
